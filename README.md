@@ -132,7 +132,7 @@ GESTURE,IDLE,0.98,RELAY,0,1210,-510,16190
 ```
 TinyGest_Interface/
 ├── app.py              # Main Streamlit dashboard
-├── serial_reader.py    # Serial communication (real + mock)
+├── serial_reader.py    # Serial communication {real + mock}
 ├── parser.py           # Serial line parsing & validation
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
