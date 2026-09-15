@@ -152,7 +152,3 @@ TinyGest_Interface/
 - **Demo loads only**: Use low-voltage loads (LED, small DC fan) for relay demonstration
 - **Not medical grade** — Academic prototype only
 - **ESP32 controls relay** — Dashboard only displays state
-
-## License
-
-College engineering project — educational use.
