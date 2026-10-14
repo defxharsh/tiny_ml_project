@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ────────────────────────────────────────────── */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  ::selection {
+    background: rgba(0, 212, 255, 0.3);
+    color: #fff;
+  }
+}
+
+/* ── Glass Card ──────────────────────────────────────── */
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-white/[0.04] shadow-lg;
+    background: rgba(15, 15, 26, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .glass-card-elevated {
+    @apply rounded-2xl border border-white/[0.06] shadow-xl;
+    background: rgba(20, 20, 35, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glass-card-subtle {
+    @apply rounded-xl border border-white/[0.03];
+    background: rgba(12, 12, 22, 0.5);
+  }
+
+  /* ── Accent Glow Ring ────────────────────────────────── */
+  .glow-ring-cyan {
+    box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.2),
+                0 0 20px rgba(0, 212, 255, 0.08),
+                inset 0 0 20px rgba(0, 212, 255, 0.03);
+  }
+  .glow-ring-violet {
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2),
+                0 0 20px rgba(139, 92, 246, 0.08),
+                inset 0 0 20px rgba(139, 92, 246, 0.03);
+  }
+  .glow-ring-green {
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2),
+                0 0 20px rgba(34, 197, 94, 0.08);
+  }
+
+  /* ── Button Styles ───────────────────────────────────── */
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
+    background: linear-gradient(135deg, #00d4ff, #3b82f6);
+    color: white;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+           border border-white/10 text-zinc-300 hover:border-white/20 hover:bg-white/[0.04];
+  }
+  .btn-danger {
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+  }
+  .btn-danger:hover {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  /* ── Status Dot ──────────────────────────────────────── */
+  .status-dot {
+    @apply w-2.5 h-2.5 rounded-full;
+  }
+  .status-dot-connected {
+    @apply bg-emerald-400;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  .status-dot-disconnected {
+    @apply bg-zinc-600;
+  }
+  .status-dot-connecting {
+    @apply bg-amber-400;
+    animation: pulseGlow 1s ease-in-out infinite;
+  }
+  .status-dot-error {
+    @apply bg-red-400;
+    box-shadow: 0 0 8px rgba(248, 113, 113, 0.6);
+  }
+
+  /* ── Stat Card ───────────────────────────────────────── */
+  .stat-card {
+    @apply glass-card-subtle p-4 flex flex-col gap-1;
+  }
+  .stat-label {
+    @apply text-xs font-medium text-zinc-500 uppercase tracking-wider;
+  }
+  .stat-value {
+    @apply text-2xl font-bold text-zinc-100;
+  }
+  .stat-sub {
+    @apply text-xs text-zinc-500;
+  }
+}
+
+/* ── Chart Container ─────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.04);
+}
+.recharts-text {
+  fill: #71717a;
+  font-size: 11px;
+}
+.recharts-tooltip-wrapper {
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* ── Pulsing Wristband SVG ───────────────────────────── */
+@keyframes wristbandPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.3)); }
+  50% { filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.6)); }
+}
+.wristband-glow {
+  animation: wristbandPulse 3s ease-in-out infinite;
+}
+
+/* ── Demo Badge ──────────────────────────────────────── */
+.demo-badge {
+  @apply text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* ── Mode Selector Toggle ────────────────────────────── */
+.mode-toggle {
+  @apply relative flex rounded-lg border border-white/[0.06] overflow-hidden;
+  background: rgba(10, 10, 18, 0.6);
+}
+.mode-toggle-btn {
+  @apply px-4 py-1.5 text-xs font-semibold uppercase tracking-wider cursor-pointer
+         transition-all duration-300 z-10 select-none;
+  color: #71717a;
+}
+.mode-toggle-btn.active {
+  color: #fff;
+}
+.mode-toggle-indicator {
+  @apply absolute top-0 left-0 h-full w-1/2 rounded-lg transition-transform duration-300;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(139, 92, 246, 0.15));
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* ── Fade-in stagger ─────────────────────────────────── */
+.fade-stagger > * {
+  animation: fadeIn 0.4s ease-out both;
+}
+.fade-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.fade-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.fade-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.fade-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.fade-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.fade-stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ── Subtle background grid ──────────────────────────── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Hardware Animations (Fan & Heartbeat) ───────────── */
+@keyframes spinFast {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-fan-spin {
+  animation: spinFast 0.8s linear infinite;
+}
+
+@keyframes heartbeatPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
+  14% { transform: scale(1.22); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
+  28% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
+  42% { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6)); }
+  70% { transform: scale(1); }
+}
+.animate-heartbeat {
+  animation: heartbeatPulse 1.2s ease-in-out infinite;
+}
+
+.glow-relay-active {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.25), inset 0 0 15px rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.glow-threshold {
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
