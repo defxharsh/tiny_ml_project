@@ -6,6 +6,7 @@
 
 ## 🌟 Highlights
 
+- **Built-in Hardware Authentication Gate**: Secure local authentication with Web Crypto SHA-256 password hashing, persistent sessions, role-based operator profiles (`admin`, `researcher`, `operator`), and 1-click quick demo access.
 - **Direct In-Browser USB Streaming**: Connects directly to the ESP32 via Web Serial API (`115200` baud) — no background Python bridges or WebSockets required.
 - **Dual Edge Impulse TinyML Modes**:
   - ✋ **Gesture Recognition**: MPU-6500 6-axis IMU sampling @ 50 Hz (`fan_on`, `fan_off`, `idle` with 65% confidence threshold).
@@ -50,6 +51,21 @@ npm run dev
 ```
 
 Open `http://localhost:5173` in your browser.
+
+---
+
+## 🔐 Default Access Credentials
+
+| Profile | Email | Password | Role & Permissions |
+|---|---|---|---|
+| **Citizen User** | `citizen@tinygest.io` | `citizen123` | Patient / Assistive telemetry & monitoring |
+| **Hardware Lead** | `admin@tinygest.io` | `admin123` | Full admin privileges & controls |
+| **Edge AI Researcher** | `researcher@tinygest.io` | `tinyml2026` | Inference monitoring & model diagnostics |
+| **Device Operator** | `operator@tinygest.io` | `operator123` | Real-time appliance control & telemetry |
+
+*(Tip: You can start by registering directly on the **Register Account** tab as a Citizen, or use the pre-seeded demo accounts in the **Sign In** tab).*
+
+---
 
 ### Building for Production
 

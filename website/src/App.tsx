@@ -14,8 +14,11 @@ import StatsPanel from './components/StatsPanel';
 import { SerialManager } from './lib/serialManager';
 import { stopDemo } from './lib/demoMode';
 import { useDashboardStore } from './store/dashboardStore';
+import { useAuthStore } from './store/authStore';
+import AuthGate from './components/AuthGate';
 
 export default function App() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const serialManagerRef = useRef<SerialManager | null>(null);
   const demoMode = useDashboardStore((s) => s.demoMode);
   const mode = useDashboardStore((s) => s.mode);
@@ -27,6 +30,10 @@ export default function App() {
       if (demoMode) stopDemo();
     };
   }, []);
+
+  if (!isAuthenticated) {
+    return <AuthGate />;
+  }
 
   return (
     <div className="min-h-screen bg-surface-900 bg-grid">

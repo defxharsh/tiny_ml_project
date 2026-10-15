@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Watch, Wifi, WifiOff, Settings, Clock, Activity } from 'lucide-react';
+import { Watch, Wifi, WifiOff, Settings, Clock, Activity, LogOut } from 'lucide-react';
 import { useDashboardStore } from '../store/dashboardStore';
+import { useAuthStore } from '../store/authStore';
 
 export default function Navbar() {
   const connectionStatus = useDashboardStore((s) => s.connectionStatus);
@@ -9,6 +10,8 @@ export default function Navbar() {
   const stats = useDashboardStore((s) => s.stats);
   const setSettingsOpen = useDashboardStore((s) => s.setSettingsOpen);
   const setConnectModalOpen = useDashboardStore((s) => s.setConnectModalOpen);
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [clock, setClock] = useState('');
   const [elapsed, setElapsed] = useState('00:00:00');
@@ -106,12 +109,35 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Right — Clock & Settings */}
+        {/* Right — User, Clock & Settings */}
         <div className="flex items-center gap-3">
+          {user && (
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-white/[0.08] bg-white/[0.03]">
+              <div className="w-5 h-5 rounded-full bg-accent-cyan/20 border border-accent-cyan/40 flex items-center justify-center text-[10px] text-accent-cyan font-bold">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="hidden sm:block text-left">
+                <div className="text-xs font-medium text-zinc-200 leading-none truncate max-w-[110px]">
+                  {user.name}
+                </div>
+                <div className="text-[9px] text-accent-cyan font-mono leading-none capitalize mt-0.5">
+                  {user.role}
+                </div>
+              </div>
+              <button
+                onClick={logout}
+                title="Log out"
+                className="p-1 rounded hover:bg-white/[0.08] text-zinc-400 hover:text-red-400 transition-colors ml-1 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           <span className="text-[11px] font-mono text-zinc-600 hidden sm:block">{clock}</span>
           <button
             onClick={() => setSettingsOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-zinc-500 hover:text-zinc-300"
+            className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-zinc-500 hover:text-zinc-300 cursor-pointer"
             title="Settings"
           >
             <Settings className="w-4 h-4" />
