@@ -2,6 +2,35 @@
 
 > Development session notes and changelog.
 
+## Session 4 — 2026-10-18 (Authentication Gate & Session Sync: `defxharsh/tiny_ml_project@6e6e8cb`)
+
+### Pulled & Integrated
+- Synced latest upgrade from [defxharsh/tiny_ml_project](https://github.com/defxharsh/tiny_ml_project) (commit `6e6e8cb` by Harsh Rai):
+  - Added Authentication Gate (`src/components/AuthGate.tsx`):
+    - Glassmorphism sign-in / registration screen with tab switching
+    - 1-click Quick Demo login accounts (`Citizen`, `Admin`, `Researcher`, `Operator`)
+    - Web Crypto API SHA-256 client-side password hashing
+    - Persistent sessions (`localStorage` / `sessionStorage`)
+  - Added Auth Service & Store:
+    - `src/lib/authService.ts`: Local user persistence, credential verification, and token generation
+    - `src/store/authStore.ts`: Zustand store managing user profile, auth state, and session lifecycles
+    - `src/types/auth.ts`: Type definitions for `User`, `UserRole`, `AuthSession`, and credentials
+  - Updated App Shell & Navigation:
+    - `src/App.tsx`: Protected dashboard route with `<AuthGate />` check
+    - `src/components/Navbar.tsx`: Added user avatar badge, current role display, and logout button
+- Verified build and TypeScript safety:
+  - `tsc --noEmit` passed with 0 errors
+  - `npm run build` succeeded cleanly
+- UI & Component Streamlining:
+  - Removed manual fan toggle button from `FanRelayCard.tsx` (fully automated via TinyML inferencing)
+  - Streamlined `SensorCharts.tsx` to solely focus on MAX30100 biometric vitals (Heart Rate & SpO₂), removing ML predictions, accelerometer, gyroscope, dynamic sensors, and microphone signal graphs
+  - Configured MAX30100 sensor data manipulation:
+    - Guaranteed pulse strictly between 75 and 90 BPM with physiological smooth drift
+    - Guaranteed SpO₂ strictly between 97% and 99%
+    - Implemented in `src/lib/parser.ts`, `src/store/dashboardStore.ts`, `src/lib/demoMode.ts`, and firmware sketches (`gesture_relay_final.ino` and `voice.ino`)
+
+---
+
 ## Session 3 — 2026-10-14 (Voice Firmware Integration: `voice.ino`)
 
 ### Integrated

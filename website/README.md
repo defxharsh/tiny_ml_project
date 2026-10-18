@@ -12,7 +12,7 @@
   - ✋ **Gesture Recognition**: MPU-6500 6-axis IMU sampling @ 50 Hz (`fan_on`, `fan_off`, `idle` with 65% confidence threshold).
   - 🎙️ **Voice Command Recognition**: INMP441 I2S digital microphone sampling @ 16 kHz (`fan_on`, `stop`, `noise`, `unknown` with 70% confidence threshold).
 - **Live Biometric Vitals**: MAX30100 photoplethysmography (PPG) pulse oximetry monitoring live **Heart Rate (BPM)** and **Blood Oxygen Saturation (SpO₂ %)**.
-- **Appliance Fan Controller**: Active-LOW relay trigger on **GPIO 13** with animated fan visualizer, real-time status telemetry, and manual override.
+- **Appliance Fan Controller**: Active-LOW relay trigger on **GPIO 13** with animated fan visualizer and real-time status telemetry.
 - **Real-Time Analytics**: Multi-series time-series charts using Recharts for biometric trends, IMU motion dynamics, and class prediction probability trajectories.
 - **Simulation Mode**: Built-in synthetic hardware stream generator for testing all features without physical hardware.
 

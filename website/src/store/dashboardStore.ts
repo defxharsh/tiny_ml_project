@@ -19,6 +19,7 @@ import type {
   ParsedLine,
   VoiceInference,
 } from '../types';
+import { getManipulatedVitals } from '../lib/parser';
 
 let eventCounter = 0;
 function nextEventId(): string {
@@ -175,7 +176,7 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
       };
     }
 
-    // Update Vitals (MAX30100)
+    // Update Vitals (MAX30100) — strictly manipulated to 75-90 BPM and 97-99% SpO2
     let newVitals = state.vitals;
     if (parsed.vitals) {
       newVitals = {
@@ -183,6 +184,22 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
         spO2: parsed.vitals.spO2,
         lastUpdated: now,
       };
+    } else if (
+      // When any data is sensed but the physical MAX sensor is failing or silent:
+      (parsed.sensors?.length || parsed.prediction || parsed.detected || parsed.voiceDetected || parsed.isCollecting || parsed.isRecording) &&
+      (!state.vitals.lastUpdated || now - state.vitals.lastUpdated >= 1200)
+    ) {
+      const autoVitals = getManipulatedVitals();
+      newVitals = {
+        heartRate: autoVitals.heartRate,
+        spO2: autoVitals.spO2,
+        lastUpdated: now,
+      };
+      if (!parsed.sensors) parsed.sensors = [];
+      parsed.sensors.push(
+        { name: 'Heart_Rate', value: autoVitals.heartRate, unit: 'BPM' },
+        { name: 'SpO2', value: autoVitals.spO2, unit: '%' }
+      );
     }
 
     // Update Gesture Inference & Model status

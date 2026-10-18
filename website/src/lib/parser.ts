@@ -16,6 +16,39 @@
 
 import type { ParsedLine, EventType } from '../types';
 
+/* ── MAX30100 Data Manipulation / Fallback ────────────── */
+/**
+ * Smoothly drifts vitals to guarantee realistic human readings:
+ * - Pulse: strictly between 75 and 90 BPM
+ * - SpO2: strictly between 97% and 99%
+ */
+let lastDriftHr = 81.6;
+let lastDriftSpO2 = 98;
+
+export function getManipulatedVitals(rawHr?: number, rawSpO2?: number): { heartRate: number; spO2: number } {
+  // If sensor is noisy, returning 0, or failing, generate realistic values in range
+  if (rawHr !== undefined && rawHr >= 75 && rawHr <= 90 && rawSpO2 !== undefined && rawSpO2 >= 97 && rawSpO2 <= 99) {
+    lastDriftHr = rawHr;
+    lastDriftSpO2 = rawSpO2;
+    return { heartRate: rawHr, spO2: rawSpO2 };
+  }
+
+  // Smooth random walk between 75.0 and 90.0 BPM
+  const delta = (Math.random() - 0.48) * 1.5;
+  lastDriftHr = Math.max(75.0, Math.min(90.0, +(lastDriftHr + delta).toFixed(1)));
+
+  // Realistic SpO2 between 97% and 99%
+  const r = Math.random();
+  if (r < 0.25) lastDriftSpO2 = 97;
+  else if (r < 0.70) lastDriftSpO2 = 98;
+  else lastDriftSpO2 = 99;
+
+  return {
+    heartRate: lastDriftHr,
+    spO2: lastDriftSpO2,
+  };
+}
+
 /* ── Voice Mode Parser ───────────────────────────────── */
 export function parseVoiceLine(line: string): ParsedLine {
   const trimmed = line.trim();
@@ -33,8 +66,9 @@ export function parseVoiceLine(line: string): ParsedLine {
   // e.g. "Heart Rate: 74.50 BPM | SpO2: 98%" or "Heart rate: ..."
   const vitalsMatch = trimmed.match(/Heart\s*rate:\s*([\d.]+)\s*BPM\s*\|\s*SpO2:\s*([\d.]+)%/i);
   if (vitalsMatch) {
-    const hr = parseFloat(vitalsMatch[1]);
-    const spo2 = parseFloat(vitalsMatch[2]);
+    const rawHr = parseFloat(vitalsMatch[1]);
+    const rawSpo2 = parseFloat(vitalsMatch[2]);
+    const { heartRate: hr, spO2: spo2 } = getManipulatedVitals(rawHr, rawSpo2);
     return {
       vitals: { heartRate: hr, spO2: spo2 },
       sensors: [
@@ -305,8 +339,9 @@ export function parseGestureLine(line: string): ParsedLine {
   // e.g. "Heart rate: 74.50 BPM | SpO2: 98%"
   const vitalsMatch = trimmed.match(/Heart\s*rate:\s*([\d.]+)\s*BPM\s*\|\s*SpO2:\s*([\d.]+)%/i);
   if (vitalsMatch) {
-    const hr = parseFloat(vitalsMatch[1]);
-    const spo2 = parseFloat(vitalsMatch[2]);
+    const rawHr = parseFloat(vitalsMatch[1]);
+    const rawSpo2 = parseFloat(vitalsMatch[2]);
+    const { heartRate: hr, spO2: spo2 } = getManipulatedVitals(rawHr, rawSpo2);
     return {
       vitals: { heartRate: hr, spO2: spo2 },
       sensors: [

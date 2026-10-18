@@ -12,15 +12,9 @@ import {
 import { useDashboardStore } from '../store/dashboardStore';
 import type { ChartConfig } from '../types';
 
-const ACCENT_COLORS = [
-  '#00d4ff', '#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f59e0b',
-  '#06b6d4', '#a78bfa', '#60a5fa',
-];
-
-/** Automatically group sensors into chart configs */
+/** Automatically configure biometric vitals charts */
 function buildChartConfigs(sensorKeys: string[]): ChartConfig[] {
   const configs: ChartConfig[] = [];
-  const used = new Set<string>();
 
   // 1. Heart Rate (MAX30100)
   if (sensorKeys.includes('Heart_Rate')) {
@@ -31,7 +25,6 @@ function buildChartConfigs(sensorKeys: string[]): ChartConfig[] {
       unit: 'BPM',
       yDomain: [50, 120],
     });
-    used.add('Heart_Rate');
   }
 
   // 2. Blood Oxygen Saturation (MAX30100)
@@ -43,71 +36,6 @@ function buildChartConfigs(sensorKeys: string[]): ChartConfig[] {
       unit: '%',
       yDomain: [88, 100],
     });
-    used.add('SpO2');
-  }
-
-  // 3. Edge Impulse Class Predictions
-  const predKeys = sensorKeys.filter((k) => k.startsWith('Pred_'));
-  if (predKeys.length > 0) {
-    configs.push({
-      title: 'ML Prediction Probabilities (%)',
-      sensorKeys: predKeys,
-      colors: predKeys.map((k) => {
-        const lower = k.toLowerCase();
-        if (lower.includes('fan_on')) return '#10b981';
-        if (lower.includes('fan_off') || lower.includes('stop')) return '#ef4444';
-        if (lower.includes('noise')) return '#06b6d4';
-        return '#8b5cf6';
-      }),
-      unit: '%',
-      yDomain: [0, 100],
-    });
-    predKeys.forEach((k) => used.add(k));
-  }
-
-  // 4. Audio & Microphone Levels (INMP441)
-  const audioKeys = sensorKeys.filter((k) => k.startsWith('AUDIO_') || k.startsWith('MIC_') || k.startsWith('SOUND_'));
-  if (audioKeys.length > 0) {
-    configs.push({
-      title: 'INMP441 Microphone Audio Signal',
-      sensorKeys: audioKeys,
-      colors: ['#00d4ff', '#8b5cf6', '#10b981'],
-      unit: '%',
-    });
-    audioKeys.forEach((k) => used.add(k));
-  }
-
-  // 5. MPU-6500 Accelerometer Group
-  const accelKeys = sensorKeys.filter((k) => k.startsWith('ACCEL_'));
-  if (accelKeys.length > 0) {
-    configs.push({
-      title: 'MPU-6500 Accelerometer (m/s²)',
-      sensorKeys: accelKeys,
-      colors: ['#00d4ff', '#8b5cf6', '#10b981'],
-    });
-    accelKeys.forEach((k) => used.add(k));
-  }
-
-  // 6. Gyroscope Group
-  const gyroKeys = sensorKeys.filter((k) => k.startsWith('GYRO_'));
-  if (gyroKeys.length > 0) {
-    configs.push({
-      title: 'Gyroscope (°/s)',
-      sensorKeys: gyroKeys,
-      colors: ['#f59e0b', '#ec4899', '#3b82f6'],
-    });
-    gyroKeys.forEach((k) => used.add(k));
-  }
-
-  // 6. Remaining ungrouped sensors
-  for (const key of sensorKeys) {
-    if (!used.has(key)) {
-      configs.push({
-        title: key.replace(/_/g, ' '),
-        sensorKeys: [key],
-        colors: [ACCENT_COLORS[configs.length % ACCENT_COLORS.length]],
-      });
-    }
   }
 
   return configs;
@@ -123,11 +51,11 @@ export default function SensorCharts() {
   if (chartConfigs.length === 0) {
     return (
       <div className="glass-card p-6">
-        <h3 className="text-sm font-semibold text-zinc-300 mb-3">📊 Sensor Analytics</h3>
+        <h3 className="text-sm font-semibold text-zinc-300 mb-3">📊 Biometric Vitals Analytics</h3>
         <div className="flex items-center justify-center h-40 text-zinc-600 text-sm">
           {connectionStatus === 'connected'
-            ? 'Waiting for sensor data…'
-            : 'Connect your wristband to see live charts'}
+            ? 'Waiting for MAX30100 vitals data…'
+            : 'Connect your wristband or start demo mode to see live vitals charts'}
         </div>
       </div>
     );
@@ -136,9 +64,9 @@ export default function SensorCharts() {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
-        📊 Live Sensor Analytics
-        <span className="text-[10px] font-normal text-zinc-600">
-          ({sensorKeys.length} sensor{sensorKeys.length !== 1 ? 's' : ''})
+        📊 Biometric Vitals Analytics
+        <span className="text-[10px] font-normal text-zinc-500">
+          (MAX30100 Pulse Oximeter)
         </span>
       </h3>
 
@@ -193,7 +121,11 @@ function SensorChart({
               interval="preserveStartEnd"
               minTickGap={40}
             />
-            <YAxis tick={{ fontSize: 10, fill: '#52525b' }} />
+            <YAxis
+              tick={{ fontSize: 10, fill: '#52525b' }}
+              domain={config.yDomain || ['auto', 'auto']}
+              unit={config.unit ? ` ${config.unit}` : undefined}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'rgba(15, 15, 26, 0.95)',
@@ -204,6 +136,7 @@ function SensorChart({
                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               }}
               labelStyle={{ color: '#71717a', marginBottom: 4 }}
+              formatter={(value: any) => [`${value}${config.unit ? ` ${config.unit}` : ''}`, config.unit || 'Value']}
             />
             {config.sensorKeys.length > 1 && (
               <Legend

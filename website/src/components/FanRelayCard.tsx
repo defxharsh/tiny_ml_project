@@ -1,4 +1,4 @@
-import { Fan, Zap, Power, Cpu, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Fan, Zap, Cpu, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useDashboardStore } from '../store/dashboardStore';
 
 export default function FanRelayCard() {
@@ -6,10 +6,6 @@ export default function FanRelayCard() {
   const inference = useDashboardStore((s) => s.inference);
   const voiceInference = useDashboardStore((s) => s.voiceInference);
   const mode = useDashboardStore((s) => s.mode);
-  const triggerManualFanToggle = useDashboardStore((s) => s.triggerManualFanToggle);
-  const connectionStatus = useDashboardStore((s) => s.connectionStatus);
-
-  const isConnected = connectionStatus === 'connected';
   const isOn = fanRelay.fanOn;
 
   const lastActionTimeStr = fanRelay.lastActionTime
@@ -77,7 +73,7 @@ export default function FanRelayCard() {
       </div>
 
       {/* Fan Visual & Status Center */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-3 items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-3 items-stretch">
         {/* Animated Fan Graphic */}
         <div
           className="glass-card-subtle p-4 rounded-xl flex flex-col items-center justify-center text-center relative overflow-hidden"
@@ -116,49 +112,34 @@ export default function FanRelayCard() {
           </p>
         </div>
 
-        {/* Action Details & Quick Controls */}
-        <div className="space-y-3">
-          <div className="glass-card-subtle p-3 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-500 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" /> Last Action
-              </span>
-              <span className="font-mono text-zinc-300">{lastActionTimeStr}</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-500 flex items-center gap-1">
-                <Cpu className="w-3.5 h-3.5" /> Total Toggles
-              </span>
-              <span className="font-mono text-zinc-300 font-bold">
-                {fanRelay.totalToggles}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-500 flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5" /> Hardware State
-              </span>
-              <span
-                className={`font-mono text-[11px] font-bold ${
-                  isOn ? 'text-emerald-400' : 'text-zinc-400'
-                }`}
-              >
-                {isOn ? 'PIN 13 = LOW (0V)' : 'PIN 13 = HIGH (3.3V)'}
-              </span>
-            </div>
+        {/* Action Details */}
+        <div className="glass-card-subtle p-4 rounded-xl flex flex-col justify-center space-y-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-zinc-500 flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-zinc-400" /> Last Action
+            </span>
+            <span className="font-mono text-zinc-300">{lastActionTimeStr}</span>
           </div>
-
-          {/* Manual Override Button */}
-          <button
-            onClick={triggerManualFanToggle}
-            className={`w-full py-2.5 px-3 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all duration-200 border ${
-              isOn
-                ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border-rose-500/30'
-                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-            }`}
-          >
-            <Power className="w-3.5 h-3.5" />
-            {isOn ? 'Manual Stop (Turn Fan OFF)' : 'Manual Start (Turn Fan ON)'}
-          </button>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-zinc-500 flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-zinc-400" /> Total Toggles
+            </span>
+            <span className="font-mono text-zinc-300 font-bold">
+              {fanRelay.totalToggles}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-zinc-500 flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-zinc-400" /> Hardware State
+            </span>
+            <span
+              className={`font-mono text-[11px] font-bold ${
+                isOn ? 'text-emerald-400' : 'text-zinc-400'
+              }`}
+            >
+              {isOn ? 'PIN 13 = LOW (0V)' : 'PIN 13 = HIGH (3.3V)'}
+            </span>
+          </div>
         </div>
       </div>
 

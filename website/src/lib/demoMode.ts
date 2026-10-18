@@ -15,7 +15,7 @@ const GESTURE_CLASSES = ['fan_on', 'fan_off', 'idle'] as const;
 
 let intervalId: number | null = null;
 let tick = 0;
-let baseHeartRate = 74;
+let baseHeartRate = 82;
 let baseSpO2 = 98;
 let simulatedFanOn = false;
 
@@ -75,8 +75,8 @@ export function startDemo(): void {
 
       // 2. Emit MAX30100 vitals every 10 ticks (~1 second)
       if (tick % 10 === 0) {
-        baseHeartRate = Math.max(62, Math.min(95, baseHeartRate + (Math.random() - 0.48) * 1.5));
-        baseSpO2 = Math.max(96, Math.min(99, Math.round(baseSpO2 + (Math.random() - 0.5) * 0.6)));
+        baseHeartRate = Math.max(75, Math.min(90, +(baseHeartRate + (Math.random() - 0.48) * 1.5).toFixed(1)));
+        baseSpO2 = Math.max(97, Math.min(99, Math.round(baseSpO2 + (Math.random() - 0.5) * 0.6)));
         const vitalsLine = `Heart rate: ${baseHeartRate.toFixed(2)} BPM | SpO2: ${baseSpO2}%`;
         state.ingestParsedLine(parseGestureLine(vitalsLine), `[DEMO] ${vitalsLine}`);
       }
@@ -133,8 +133,8 @@ export function startDemo(): void {
 
       // 2. Emit MAX30100 vitals every 10 ticks (~1 second)
       if (tick % 10 === 0) {
-        baseHeartRate = Math.max(62, Math.min(95, baseHeartRate + (Math.random() - 0.48) * 1.5));
-        baseSpO2 = Math.max(96, Math.min(99, Math.round(baseSpO2 + (Math.random() - 0.5) * 0.6)));
+        baseHeartRate = Math.max(75, Math.min(90, +(baseHeartRate + (Math.random() - 0.48) * 1.5).toFixed(1)));
+        baseSpO2 = Math.max(97, Math.min(99, Math.round(baseSpO2 + (Math.random() - 0.5) * 0.6)));
         const vitalsLine = `Heart Rate: ${baseHeartRate.toFixed(2)} BPM | SpO2: ${baseSpO2}%`;
         state.ingestParsedLine(parseVoiceLine(vitalsLine), `[DEMO] ${vitalsLine}`);
       }

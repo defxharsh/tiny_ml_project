@@ -29,7 +29,7 @@ graph TD
 - Animated spinning ventilation fan illustration with speed dynamics
 - Active/Standby status pills and live hardware pin readouts
 - Action logs (e.g. `ACTION: FAN ON`, `ACTION: FAN OFF`)
-- Interactive manual override switch to trigger the relay from UI
+- Dedicated hardware-only relay trigger feedback (autonomous control via TinyML model predictions)
 
 ### VitalsPanel
 **File:** `src/components/VitalsPanel.tsx`
@@ -91,10 +91,12 @@ graph TD
 
 ### SensorCharts
 **File:** `src/components/SensorCharts.tsx`
-- Real-time Recharts time-series data
-- Dedicated biometric charts: Heart Rate (BPM) and SpO₂ (%)
-- Motion analytics: MPU-6500 Accelerometer (`ax`, `ay`, `az`)
-- Edge Impulse prediction probability trends
+- Dedicated biometric telemetry time-series charts using Recharts:
+  - **Heart Rate (MAX30100)**: Real-time BPM trend (domain 50–120) with rose accent curve
+  - **Blood Oxygen SpO₂ (MAX30100)**: Real-time saturation % trend (domain 88–100) with cyan accent curve
+- Real-time time-series aggregation from incoming serial stream
+- Tooltips with localized timestamp formatting and unit indicators
+- Side-by-side responsive layout aligned with biometric vitals tracking
 
 ### SerialConsole
 **File:** `src/components/SerialConsole.tsx`
