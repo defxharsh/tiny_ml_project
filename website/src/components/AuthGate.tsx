@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { UserRole } from '../types/auth';
+import ForgotPassword from './ForgotPassword';
 
 export default function AuthGate() {
   // Start on Register (signup) as requested
@@ -26,6 +27,7 @@ export default function AuthGate() {
   const [role, setRole] = useState<UserRole>('citizen');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgot, setForgot] = useState(false);
 
   const { login, signup, isLoading, error, clearError } = useAuthStore();
 
@@ -106,7 +108,21 @@ export default function AuthGate() {
             </div>
           </div>
 
+          {forgot ? (
+            <ForgotPassword
+              initialEmail={email}
+              onBack={(e) => {
+                clearError();
+                if (e) setEmail(e);
+                setPassword('');
+                setTab('login');
+                setForgot(false);
+              }}
+            />
+          ) : (
+          <>
           {/* Tab Selector — Starts on Register */}
+
           <div className="flex rounded-lg bg-surface-800/80 p-1 border border-white/[0.06] mb-6">
             <button
               type="button"
@@ -188,9 +204,16 @@ export default function AuthGate() {
                   Password
                 </label>
                 {tab === 'login' && (
-                  <span className="text-[11px] text-zinc-500 font-mono">
-                    Demo: <span className="text-accent-cyan">citizen123</span>
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearError();
+                      setForgot(true);
+                    }}
+                    className="text-[11px] text-accent-cyan hover:underline cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
                 )}
               </div>
               <div className="relative">
@@ -349,9 +372,10 @@ export default function AuthGate() {
               </div>
             </div>
           </div>
+          </>
+          )}
         </div>
-
-        {/* Footer info */}
+         {/* Footer info */}
         <div className="text-center mt-6 text-[11px] text-zinc-600 font-mono">
           TinyGest ESP32 Hardware Console • Web Serial API Ready
         </div>

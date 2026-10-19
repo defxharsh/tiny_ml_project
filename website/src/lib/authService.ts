@@ -1,4 +1,12 @@
 import { User, UserRole, LoginCredentials, SignUpCredentials, AuthSession, AuthResult } from '../types/auth';
+import {
+  requestOtp,
+  verifyOtp,
+  isOtpVerified,
+  clearOtp,
+  OtpSendResult,
+  OtpVerifyResult,
+} from './otpService';
 
 const STORAGE_USERS_KEY = 'tinygest_auth_users_v2';
 const STORAGE_SESSION_KEY = 'tinygest_auth_session_v1';
@@ -222,6 +230,59 @@ class AuthService {
 
     this.saveSession(session, true);
     return { success: true, user: safeUser };
+  }
+
+  /* ── Forgot password (email OTP) ─────────────────────── */
+
+  private isDemoEmail(email: string): boolean {
+    return DEMO_ACCOUNTS.some((d) => d.email === email);
+  }
+
+  /** Step 1: email an OTP. Same response whether or not the account exists. */
+  public async requestPasswordReset(rawEmail: string): Promise<OtpSendResult> {
+    await this.ensureInitialized();
+    const email = rawEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { success: false, error: 'Please provide a valid email address.' };
+    }
+    if (this.isDemoEmail(email)) {
+      return { success: false, error: 'Demo accounts cannot be reset. Register your own account instead.' };
+    }
+    const user = this.getStoredUsers().find((u) => u.email === email);
+    return requestOtp(email, user ? user.name : null);
+  }
+
+  /** Step 2: check the OTP. */
+  public verifyResetOtp(email: string, code: string): Promise<OtpVerifyResult> {
+    return verifyOtp(email, code);
+  }
+
+  /** Step 3: set a new password (only after a verified OTP). */
+  public async resetPassword(rawEmail: string, newPassword: string): Promise<AuthResult> {
+    await this.ensureInitialized();
+    const email = rawEmail.trim().toLowerCase();
+    const password = newPassword.trim();
+
+    if (!isOtpVerified(email)) {
+      return { success: false, error: 'Verification expired. Please start again.' };
+    }
+    if (password.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
+    }
+
+    const users = this.getStoredUsers();
+    const user = users.find((u) => u.email === email);
+    if (!user || this.isDemoEmail(email)) {
+      return { success: false, error: 'Verification expired. Please start again.' };
+    }
+
+    user.passwordHash = await hashPassword(password);
+    this.saveStoredUsers(users);
+    clearOtp();
+    // Sign out any existing session so the new password is used from now on
+    this.logout();
+    return { success: true };
   }
 
   public logout(): void {
